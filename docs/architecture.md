@@ -16,6 +16,11 @@ Implemented Azure foundational network stack:
   - hub network
   - spoke network
   - apps/services workload placement (for AKS and app resources)
+- Reusable workload modules used by the platform module:
+  - `aks-private`
+  - `postgresql-flexible`
+  - `acr`
+  - `key-vault`
 - Backward-compatible foundational modules:
   - Resource Group module
   - Virtual Network module

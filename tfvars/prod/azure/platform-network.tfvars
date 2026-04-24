@@ -19,3 +19,20 @@ spoke_subnet_aks           = "10.10.1.0/25"
 spoke_subnet_db            = "10.10.1.128/26"
 spoke_subnet_private_endpoints = "10.10.1.192/26"
 spoke_subnet_jump          = "10.10.2.0/26"
+
+acr_name            = "acrproduaen01"
+key_vault_name      = "kv-prod-apps-uaen"
+aks_name            = "aks-prod-uaen-private"
+aks_dns_prefix      = "aksproduaen"
+aks_kubernetes_version = "1.29.9"
+aks_node_vm_size    = "Standard_D4s_v5"
+aks_node_count      = 2
+
+postgresql_server_name           = "psql-prod-uaen"
+postgresql_version               = "14"
+postgresql_private_dns_zone_name = "prod-uaen.postgres.database.azure.com"
+postgresql_private_dns_link_name = "prod-uaen-postgres-link"
+postgresql_admin_username        = "pgadmin"
+postgresql_storage_mb            = 32768
+postgresql_sku_name              = "B_Standard_B1ms"
+postgresql_zone                  = "1"

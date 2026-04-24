@@ -8,7 +8,7 @@
 
 ## Deploy (single run per environment)
 
-Each environment now has a **single Terragrunt unit** for Azure networking:
+Each environment now has a **single Terragrunt unit** for Azure platform resources:
 
 - `dev/azure`
 - `prod/azure`
@@ -36,7 +36,22 @@ State files are separated by environment under the same Azure Blob container:
 - `dev/azure/terraform.tfstate`
 - `prod/azure/terraform.tfstate`
 
-This gives one state file per environment for Azure network baseline.
+This gives one state file per environment for Azure platform baseline.
+
+## Dev workload additions
+
+The dev environment (`tfvars/dev/azure/platform-network.tfvars`) now includes:
+
+- Private AKS cluster (2 nodes, `Standard_D4s_v5` ~= 16 GiB RAM/node)
+- Istio service mesh with internal ingress gateway enabled
+- Azure Container Registry (Standard SKU)
+- Azure Key Vault (RBAC enabled)
+- PostgreSQL Flexible Server (private access only) in spoke DB subnet
+
+AKS integration is configured with:
+
+- `AcrPull` role assignment on ACR to AKS kubelet identity
+- `Key Vault Secrets User` role assignment on Key Vault to AKS kubelet identity
 
 The root Terragrunt config also generates an empty Terraform backend block (`backend "azurerm" {}`) in each stack so Terragrunt remote state works correctly in CI.
 

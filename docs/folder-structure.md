@@ -17,6 +17,10 @@ Environments are top-level directories (`dev/`, `prod/`, and any others you add)
 ├── modules/
 │   ├── azure/
 │   │   ├── platform-network/
+│   │   ├── aks-private/
+│   │   ├── postgresql-flexible/
+│   │   ├── acr/
+│   │   ├── key-vault/
 │   │   ├── resource-group/
 │   │   ├── virtual-network/
 │   │   └── subnet/
