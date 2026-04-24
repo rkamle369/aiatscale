@@ -15,7 +15,8 @@ resource "azurerm_kubernetes_cluster" "this" {
   }
 
   identity {
-    type = "SystemAssigned"
+    type         = "UserAssigned"
+    identity_ids = [var.control_plane_user_assigned_identity_id]
   }
 
   key_vault_secrets_provider {
@@ -27,8 +28,8 @@ resource "azurerm_kubernetes_cluster" "this" {
 
   service_mesh_profile {
     mode                             = "Istio"
-    internal_ingress_gateway_enabled = true
-    external_ingress_gateway_enabled = false
+    internal_ingress_gateway_enabled = var.istio_internal_ingress_enabled
+    external_ingress_gateway_enabled = var.istio_external_ingress_enabled
   }
 
   network_profile {

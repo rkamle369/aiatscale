@@ -46,6 +46,9 @@ The dev environment (`tfvars/dev/azure/platform-network.tfvars`) now includes:
 
 - Private AKS cluster (2 nodes, `Standard_D2s_v5` to keep total cluster request at 4 vCPU under constrained quota)
 - Additional AKS Spot node pool (`spotpool`) for lower-cost interruptible workloads
+- Istio ingress gateways are variable-driven:
+  - `aks_istio_internal_ingress_enabled`
+  - `aks_istio_external_ingress_enabled` (set `true` to get external/public LB ingress)
 - Istio service mesh with internal ingress gateway enabled
 - Azure Container Registry (Standard SKU)
 - Azure Key Vault (RBAC enabled)
@@ -69,6 +72,7 @@ Spot node details:
   - `aks_node_resource_group_name`
   - `aks_system_node_pool_name`
   - `aks_spot_node_pool_name`
+- AKS control-plane identity is user-assigned and pre-granted `Network Contributor` on the AKS subnet to avoid subnet authorization errors during cluster create.
 
 To check supported versions for your region:
 

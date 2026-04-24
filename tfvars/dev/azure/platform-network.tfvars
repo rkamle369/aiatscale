@@ -32,6 +32,8 @@ aks_spot_node_pool_name = "spotpool"
 aks_spot_node_vm_size = "Standard_D2s_v5"
 aks_spot_node_count   = 1
 aks_spot_max_price    = -1
+aks_istio_internal_ingress_enabled = true
+aks_istio_external_ingress_enabled = true
 
 postgresql_server_name           = "psql-dev-uaen"
 postgresql_version               = "14"

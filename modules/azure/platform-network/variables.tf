@@ -111,6 +111,14 @@ variable "aks_spot_max_price" {
   type = number
 }
 
+variable "aks_istio_internal_ingress_enabled" {
+  type = bool
+}
+
+variable "aks_istio_external_ingress_enabled" {
+  type = bool
+}
+
 variable "postgresql_server_name" {
   type = string
 }

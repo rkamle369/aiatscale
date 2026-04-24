@@ -62,6 +62,19 @@ resource "azurerm_subnet" "spoke_aks" {
   address_prefixes     = [var.spoke_subnet_aks]
 }
 
+resource "azurerm_user_assigned_identity" "aks_control_plane" {
+  name                = "${var.aks_name}-cp-identity"
+  resource_group_name = azurerm_resource_group.apps.name
+  location            = var.location
+  tags                = var.tags
+}
+
+resource "azurerm_role_assignment" "aks_control_plane_subnet_network_contributor" {
+  scope                = azurerm_subnet.spoke_aks.id
+  role_definition_name = "Network Contributor"
+  principal_id         = azurerm_user_assigned_identity.aks_control_plane.principal_id
+}
+
 resource "azurerm_subnet" "spoke_db" {
   name                 = "snet-db"
   resource_group_name  = azurerm_resource_group.spoke.name
@@ -124,6 +137,7 @@ module "aks" {
   location           = var.location
   resource_group_name = azurerm_resource_group.apps.name
   node_resource_group_name = var.aks_node_resource_group_name
+  control_plane_user_assigned_identity_id = azurerm_user_assigned_identity.aks_control_plane.id
   dns_prefix         = var.aks_dns_prefix
   subnet_id          = azurerm_subnet.spoke_aks.id
   system_node_pool_name = var.aks_system_node_pool_name
@@ -133,7 +147,13 @@ module "aks" {
   spot_node_vm_size  = var.aks_spot_node_vm_size
   spot_node_count    = var.aks_spot_node_count
   spot_max_price     = var.aks_spot_max_price
+  istio_internal_ingress_enabled = var.aks_istio_internal_ingress_enabled
+  istio_external_ingress_enabled = var.aks_istio_external_ingress_enabled
   tags               = var.tags
+
+  depends_on = [
+    azurerm_role_assignment.aks_control_plane_subnet_network_contributor
+  ]
 }
 
 module "postgresql" {
