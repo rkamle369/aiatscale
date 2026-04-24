@@ -137,7 +137,7 @@ module "postgresql" {
   name                  = var.postgresql_server_name
   resource_group_name   = azurerm_resource_group.apps.name
   location              = var.location
-  version               = var.postgresql_version
+  postgresql_engine_version = var.postgresql_version
   delegated_subnet_id   = azurerm_subnet.spoke_db.id
   virtual_network_id    = azurerm_virtual_network.spoke.id
   private_dns_zone_name = var.postgresql_private_dns_zone_name
