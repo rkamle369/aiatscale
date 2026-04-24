@@ -2,12 +2,13 @@ resource "azurerm_kubernetes_cluster" "this" {
   name                    = var.name
   location                = var.location
   resource_group_name     = var.resource_group_name
+  node_resource_group     = var.node_resource_group_name
   dns_prefix              = var.dns_prefix
   private_cluster_enabled = true
   sku_tier                = "Free"
 
   default_node_pool {
-    name           = "system"
+    name           = var.system_node_pool_name
     vm_size        = var.node_vm_size
     node_count     = var.node_count
     vnet_subnet_id = var.subnet_id
@@ -39,7 +40,7 @@ resource "azurerm_kubernetes_cluster" "this" {
 }
 
 resource "azurerm_kubernetes_cluster_node_pool" "spot" {
-  name                  = "spotpool"
+  name                  = var.spot_node_pool_name
   kubernetes_cluster_id = azurerm_kubernetes_cluster.this.id
   vm_size               = var.spot_node_vm_size
   node_count            = var.spot_node_count

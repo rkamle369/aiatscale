@@ -23,11 +23,14 @@ spoke_subnet_jump          = "10.10.2.0/26"
 acr_name            = "acrdevuaen01"
 key_vault_name      = "kv-dev-apps-uaen"
 aks_name            = "aks-dev-uaen-private"
+aks_node_resource_group_name = "rg-dev-apps-uaen-aks-nodes"
 aks_dns_prefix      = "aksdevuaen"
+aks_system_node_pool_name = "system"
 aks_node_vm_size    = "Standard_D2s_v5"
 aks_node_count      = 2
+aks_spot_node_pool_name = "spotpool"
 aks_spot_node_vm_size = "Standard_D2s_v5"
-aks_spot_node_count   = 2
+aks_spot_node_count   = 1
 aks_spot_max_price    = -1
 
 postgresql_server_name           = "psql-dev-uaen"

@@ -65,6 +65,10 @@ Spot node details:
 - Spot nodes are discounted, not free.
 - Spot nodes can be evicted at any time by Azure.
 - This repo config uses `spot_max_price = -1` (pay up to on-demand price, still using Spot capacity when available).
+- AKS managed node resource group and node pool names are variable-driven in tfvars:
+  - `aks_node_resource_group_name`
+  - `aks_system_node_pool_name`
+  - `aks_spot_node_pool_name`
 
 To check supported versions for your region:
 

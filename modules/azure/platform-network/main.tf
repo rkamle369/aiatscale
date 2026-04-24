@@ -123,10 +123,13 @@ module "aks" {
   name               = var.aks_name
   location           = var.location
   resource_group_name = azurerm_resource_group.apps.name
+  node_resource_group_name = var.aks_node_resource_group_name
   dns_prefix         = var.aks_dns_prefix
   subnet_id          = azurerm_subnet.spoke_aks.id
+  system_node_pool_name = var.aks_system_node_pool_name
   node_vm_size       = var.aks_node_vm_size
   node_count         = var.aks_node_count
+  spot_node_pool_name = var.aks_spot_node_pool_name
   spot_node_vm_size  = var.aks_spot_node_vm_size
   spot_node_count    = var.aks_spot_node_count
   spot_max_price     = var.aks_spot_max_price

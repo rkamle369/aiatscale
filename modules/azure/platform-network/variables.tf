@@ -75,7 +75,15 @@ variable "aks_name" {
   type = string
 }
 
+variable "aks_node_resource_group_name" {
+  type = string
+}
+
 variable "aks_dns_prefix" {
+  type = string
+}
+
+variable "aks_system_node_pool_name" {
   type = string
 }
 
@@ -88,6 +96,10 @@ variable "aks_node_count" {
 }
 
 variable "aks_spot_node_vm_size" {
+  type = string
+}
+
+variable "aks_spot_node_pool_name" {
   type = string
 }
 
