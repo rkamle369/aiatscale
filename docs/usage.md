@@ -50,6 +50,8 @@ The dev environment (`tfvars/dev/azure/platform-network.tfvars`) now includes:
 - Azure Key Vault (RBAC enabled)
 - PostgreSQL Flexible Server (private access only) in spoke DB subnet
 
+Current dev target region is `uaenorth`.
+
 AKS integration is configured with:
 
 - `AcrPull` role assignment on ACR to AKS kubelet identity

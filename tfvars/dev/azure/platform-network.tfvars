@@ -1,4 +1,4 @@
-location = "eastus"
+location = "uaenorth"
 tags = {
   environment = "dev"
   managed_by  = "terraform"
@@ -24,7 +24,7 @@ acr_name            = "acrdevuaen01"
 key_vault_name      = "kv-dev-apps-uaen"
 aks_name            = "aks-dev-uaen-private"
 aks_dns_prefix      = "aksdevuaen"
-aks_kubernetes_version = "1.29.9"
+aks_kubernetes_version = "1.30.7"
 aks_node_vm_size    = "Standard_D4s_v5"
 aks_node_count      = 2
 

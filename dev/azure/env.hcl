@@ -1,4 +1,4 @@
 locals {
   environment = "dev"
-  location    = "eastus"
+  location    = "uaenorth"
 }
