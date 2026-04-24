@@ -57,6 +57,14 @@ AKS integration is configured with:
 - `AcrPull` role assignment on ACR to AKS kubelet identity
 - `Key Vault Secrets User` role assignment on Key Vault to AKS kubelet identity
 
+AKS Kubernetes version is intentionally not pinned in tfvars. Azure selects a supported non-LTS default for the target region/subscription (recommended for Free tier compatibility).
+
+To check supported versions for your region:
+
+```bash
+az aks get-versions --location uaenorth --output table
+```
+
 The root Terragrunt config also generates an empty Terraform backend block (`backend "azurerm" {}`) in each stack so Terragrunt remote state works correctly in CI.
 
 ## GitHub Actions OIDC

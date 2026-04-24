@@ -79,10 +79,6 @@ variable "aks_dns_prefix" {
   type = string
 }
 
-variable "aks_kubernetes_version" {
-  type = string
-}
-
 variable "aks_node_vm_size" {
   type = string
 }
