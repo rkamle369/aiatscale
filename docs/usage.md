@@ -46,6 +46,8 @@ State files are separated by environment under the same Azure Blob container:
 - `dev/azure/.../terraform.tfstate`
 - `prod/azure/.../terraform.tfstate`
 
+The root Terragrunt config also generates an empty Terraform backend block (`backend "azurerm" {}`) in each stack so Terragrunt remote state works correctly in CI.
+
 ## GitHub Actions OIDC
 
 This repository includes GitHub workflows for plan/apply using Azure Workload Identity (OIDC):
