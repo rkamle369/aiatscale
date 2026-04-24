@@ -6,30 +6,17 @@
 - Terragrunt latest
 - Azure authentication (for example `az login`)
 
-## Deploy Order (per env)
+## Deploy (single run per environment)
 
-Replace `<env>` with the environment name at repo root, for example `dev` or `prod`.
+Each environment now has a **single Terragrunt unit** for Azure networking:
 
-Deploy hub:
+- `dev/azure`
+- `prod/azure`
 
-1. `<env>/azure/hub-network/resource-group`
-2. `<env>/azure/hub-network/virtual-network`
-3. `<env>/azure/hub-network/subnet-azurefirewall`
-4. `<env>/azure/hub-network/subnet-appgw`
-5. `<env>/azure/hub-network/subnet-bastion`
-
-Deploy spoke:
-
-1. `<env>/azure/spoke-network/resource-group`
-2. `<env>/azure/spoke-network/virtual-network`
-3. `<env>/azure/spoke-network/subnet-aks`
-4. `<env>/azure/spoke-network/subnet-db`
-5. `<env>/azure/spoke-network/subnet-private-endpoints`
-6. `<env>/azure/spoke-network/subnet-jump`
-
-For each folder:
+Run from one environment folder:
 
 ```bash
+cd dev/azure
 terragrunt init
 terragrunt plan
 terragrunt apply
@@ -37,14 +24,19 @@ terragrunt apply
 
 ## Variable Files
 
-Each component reads from a dedicated tfvars file in `tfvars/<env>/azure/...` via Terragrunt `extra_arguments`.
+Each environment uses one dedicated tfvars file:
+
+- `tfvars/dev/azure/platform-network.tfvars`
+- `tfvars/prod/azure/platform-network.tfvars`
 
 ## Terraform State Layout
 
 State files are separated by environment under the same Azure Blob container:
 
-- `dev/azure/.../terraform.tfstate`
-- `prod/azure/.../terraform.tfstate`
+- `dev/azure/terraform.tfstate`
+- `prod/azure/terraform.tfstate`
+
+This gives one state file per environment for Azure network baseline.
 
 The root Terragrunt config also generates an empty Terraform backend block (`backend "azurerm" {}`) in each stack so Terragrunt remote state works correctly in CI.
 

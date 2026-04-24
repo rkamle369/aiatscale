@@ -7,11 +7,11 @@ This repository provides a **module-based infrastructure baseline** using:
 - Dedicated environment tfvars (`tfvars/`)
 - Documentation (`docs/`)
 
-Current implementation includes Azure foundation modules and environment stacks for:
+Current implementation includes Azure foundation for:
 
-- Resource Groups
-- Virtual Networks
-- Subnets
+- Hub and Spoke Resource Groups
+- Hub and Spoke Virtual Networks
+- Hub and Spoke Subnets
 
 The layout is designed to support multiple clouds in the same repository:
 
@@ -24,7 +24,7 @@ The layout is designed to support multiple clouds in the same repository:
 1. Install Terraform and Terragrunt.
 2. Configure Azure credentials.
 3. Go to an environment stack directory, for example:
-   - `dev/azure/hub-network/resource-group` (or another component under `dev/azure/...` or `prod/azure/...`)
+   - `dev/azure`
 4. Run:
 
 ```bash

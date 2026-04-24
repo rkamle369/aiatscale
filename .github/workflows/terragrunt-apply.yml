@@ -50,9 +50,9 @@ jobs:
         with:
           terragrunt-version: 0.66.9
 
-      - name: Terragrunt run-all apply
+      - name: Terragrunt apply
         working-directory: ${{ env.TARGET_ENV }}/azure
         shell: bash
         run: |
-          terragrunt run-all init --terragrunt-non-interactive
-          terragrunt run-all apply --terragrunt-non-interactive -auto-approve
+          terragrunt init --terragrunt-non-interactive
+          terragrunt apply --terragrunt-non-interactive -auto-approve

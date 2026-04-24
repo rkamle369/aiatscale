@@ -51,9 +51,9 @@ jobs:
         with:
           terragrunt-version: 0.66.9
 
-      - name: Terragrunt run-all plan
+      - name: Terragrunt plan
         working-directory: ${{ env.TARGET_ENV }}/azure
         shell: bash
         run: |
-          terragrunt run-all init --terragrunt-non-interactive
-          terragrunt run-all plan --terragrunt-non-interactive
+          terragrunt init --terragrunt-non-interactive
+          terragrunt plan --terragrunt-non-interactive

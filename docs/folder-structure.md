@@ -7,34 +7,29 @@ Environments are top-level directories (`dev/`, `prod/`, and any others you add)
 ├── dev/
 │   └── azure/
 │       ├── env.hcl
-│       ├── hub-network/
-│       └── spoke-network/
+│       └── terragrunt.hcl
 ├── prod/
 │   └── azure/
 │       ├── env.hcl
-│       ├── hub-network/
-│       └── spoke-network/
+│       └── terragrunt.hcl
 ├── terragrunt.hcl
 ├── docs/
 ├── modules/
 │   ├── azure/
+│   │   ├── platform-network/
 │   │   ├── resource-group/
 │   │   ├── virtual-network/
 │   │   └── subnet/
 │   ├── aws/
 │   └── gcp/
 └── tfvars/
-    ├── dev/azure/
-    └── prod/azure/
+    ├── dev/azure/platform-network.tfvars
+    └── prod/azure/platform-network.tfvars
 ```
 
 ## Design Notes
 
 - Module-first structure for clean reuse.
 - Terragrunt orchestrates environment-specific deployments; the root `terragrunt.hcl` is at the repository root and is included by all stacks.
-- Dedicated tfvars files per component and environment.
+- Single Terragrunt unit per environment for Azure network baseline.
 - Explicit values over dynamic conditions for easier debugging.
-
-## Why not `live/`?
-
-Some teams use a `live/` (or `environments/`) folder only to separate "deployed stacks" from `modules/`. This repo instead keeps `dev/`, `prod/`, and future envs at the root for shorter paths and less nesting.
