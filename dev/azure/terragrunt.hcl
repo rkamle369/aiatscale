@@ -3,7 +3,7 @@ include "root" {
 }
 
 terraform {
-  source = "../../modules/azure/platform-network"
+  source = "../../modules/azure//platform-network"
 
   extra_arguments "component_tfvars" {
     commands = get_terraform_commands_that_need_vars()

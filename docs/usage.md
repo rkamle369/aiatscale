@@ -13,6 +13,8 @@ Each environment now has a **single Terragrunt unit** for Azure platform resourc
 - `dev/azure`
 - `prod/azure`
 
+Terragrunt uses `modules/azure//platform-network` as source so sibling reusable modules (`acr`, `aks-private`, `key-vault`, `postgresql-flexible`) are available in cache during CI runs.
+
 Run from one environment folder:
 
 ```bash
