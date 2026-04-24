@@ -24,8 +24,11 @@ acr_name            = "acrproduaen01"
 key_vault_name      = "kv-prod-apps-uaen"
 aks_name            = "aks-prod-uaen-private"
 aks_dns_prefix      = "aksproduaen"
-aks_node_vm_size    = "Standard_D4s_v5"
+aks_node_vm_size    = "Standard_D2s_v5"
 aks_node_count      = 2
+aks_spot_node_vm_size = "Standard_D2s_v5"
+aks_spot_node_count   = 1
+aks_spot_max_price    = -1
 
 postgresql_server_name           = "psql-prod-uaen"
 postgresql_version               = "14"

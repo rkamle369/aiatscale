@@ -4,6 +4,7 @@ resource "azurerm_kubernetes_cluster" "this" {
   resource_group_name     = var.resource_group_name
   dns_prefix              = var.dns_prefix
   private_cluster_enabled = true
+  sku_tier                = "Free"
 
   default_node_pool {
     name           = "system"
@@ -33,6 +34,24 @@ resource "azurerm_kubernetes_cluster" "this" {
     network_plugin = "azure"
     network_policy = "azure"
   }
+
+  tags = var.tags
+}
+
+resource "azurerm_kubernetes_cluster_node_pool" "spot" {
+  name                  = "spotpool"
+  kubernetes_cluster_id = azurerm_kubernetes_cluster.this.id
+  vm_size               = var.spot_node_vm_size
+  node_count            = var.spot_node_count
+  mode                  = "User"
+  os_type               = "Linux"
+  priority              = "Spot"
+  eviction_policy       = "Delete"
+  spot_max_price        = var.spot_max_price
+
+  node_taints = [
+    "kubernetes.azure.com/scalesetpriority=spot:NoSchedule"
+  ]
 
   tags = var.tags
 }

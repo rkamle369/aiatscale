@@ -44,7 +44,8 @@ This gives one state file per environment for Azure platform baseline.
 
 The dev environment (`tfvars/dev/azure/platform-network.tfvars`) now includes:
 
-- Private AKS cluster (2 nodes, `Standard_D4s_v5` ~= 16 GiB RAM/node)
+- Private AKS cluster (2 nodes, `Standard_D2s_v5` to keep total cluster request at 4 vCPU under constrained quota)
+- Additional AKS Spot node pool (`spotpool`) for lower-cost interruptible workloads
 - Istio service mesh with internal ingress gateway enabled
 - Azure Container Registry (Standard SKU)
 - Azure Key Vault (RBAC enabled)
@@ -58,6 +59,12 @@ AKS integration is configured with:
 - `Key Vault Secrets User` role assignment on Key Vault to AKS kubelet identity
 
 AKS Kubernetes version is intentionally not pinned in tfvars. Azure selects a supported non-LTS default for the target region/subscription (recommended for Free tier compatibility).
+
+Spot node details:
+
+- Spot nodes are discounted, not free.
+- Spot nodes can be evicted at any time by Azure.
+- This repo config uses `spot_max_price = -1` (pay up to on-demand price, still using Spot capacity when available).
 
 To check supported versions for your region:
 

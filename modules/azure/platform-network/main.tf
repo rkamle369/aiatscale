@@ -127,6 +127,9 @@ module "aks" {
   subnet_id          = azurerm_subnet.spoke_aks.id
   node_vm_size       = var.aks_node_vm_size
   node_count         = var.aks_node_count
+  spot_node_vm_size  = var.aks_spot_node_vm_size
+  spot_node_count    = var.aks_spot_node_count
+  spot_max_price     = var.aks_spot_max_price
   tags               = var.tags
 }
 

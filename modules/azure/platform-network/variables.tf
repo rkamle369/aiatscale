@@ -87,6 +87,18 @@ variable "aks_node_count" {
   type = number
 }
 
+variable "aks_spot_node_vm_size" {
+  type = string
+}
+
+variable "aks_spot_node_count" {
+  type = number
+}
+
+variable "aks_spot_max_price" {
+  type = number
+}
+
 variable "postgresql_server_name" {
   type = string
 }
