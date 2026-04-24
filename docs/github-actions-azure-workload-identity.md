@@ -22,6 +22,18 @@ Use these names later as GitHub repository variables:
 - `TFSTATE_STORAGE_ACCOUNT`
 - `TFSTATE_CONTAINER`
 
+### State file layout inside the container
+
+This repo writes separate state files per environment automatically by key prefix:
+
+- `dev/azure/.../terraform.tfstate`
+- `prod/azure/.../terraform.tfstate`
+
+Examples:
+
+- `dev/azure/hub-network/resource-group/terraform.tfstate`
+- `prod/azure/spoke-network/subnet-aks/terraform.tfstate`
+
 ## 2) Create App Registration (Azure Portal)
 
 1. Go to **Azure Portal** -> **Microsoft Entra ID** -> **App registrations**.

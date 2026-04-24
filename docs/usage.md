@@ -39,6 +39,13 @@ terragrunt apply
 
 Each component reads from a dedicated tfvars file in `tfvars/<env>/azure/...` via Terragrunt `extra_arguments`.
 
+## Terraform State Layout
+
+State files are separated by environment under the same Azure Blob container:
+
+- `dev/azure/.../terraform.tfstate`
+- `prod/azure/.../terraform.tfstate`
+
 ## GitHub Actions OIDC
 
 This repository includes GitHub workflows for plan/apply using Azure Workload Identity (OIDC):
