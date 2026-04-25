@@ -174,6 +174,30 @@ module "postgresql" {
   tags                  = var.tags
 }
 
+resource "azurerm_key_vault_secret" "postgres_username" {
+  name         = "postgres-admin-username"
+  value        = module.postgresql.administrator_username
+  key_vault_id = module.key_vault.id
+}
+
+resource "azurerm_key_vault_secret" "postgres_password" {
+  name         = "postgres-admin-password"
+  value        = module.postgresql.administrator_password
+  key_vault_id = module.key_vault.id
+}
+
+resource "azurerm_key_vault_secret" "postgres_url" {
+  name         = "postgres-url"
+  value        = "postgresql://${module.postgresql.fqdn}:5432/postgres"
+  key_vault_id = module.key_vault.id
+}
+
+resource "azurerm_key_vault_secret" "postgres_secure_string" {
+  name         = "postgres-secure-string"
+  value        = "Host=${module.postgresql.fqdn};Port=5432;Database=postgres;Username=${module.postgresql.administrator_username};Password=${module.postgresql.administrator_password};Ssl Mode=Require"
+  key_vault_id = module.key_vault.id
+}
+
 resource "azurerm_role_assignment" "aks_acr_pull" {
   scope                = module.acr.id
   role_definition_name = "AcrPull"

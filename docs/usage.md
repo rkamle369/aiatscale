@@ -73,6 +73,11 @@ Spot node details:
   - `aks_system_node_pool_name`
   - `aks_spot_node_pool_name`
 - AKS control-plane identity is user-assigned and pre-granted `Network Contributor` on the AKS subnet to avoid subnet authorization errors during cluster create.
+- PostgreSQL connection values are stored in Key Vault secrets:
+  - `postgres-admin-username`
+  - `postgres-admin-password`
+  - `postgres-url`
+  - `postgres-secure-string`
 
 To check supported versions for your region:
 
