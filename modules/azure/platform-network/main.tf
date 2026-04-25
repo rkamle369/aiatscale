@@ -130,6 +130,12 @@ module "key_vault" {
   tags                          = var.tags
 }
 
+resource "azurerm_role_assignment" "terraform_key_vault_secrets_officer" {
+  scope                = module.key_vault.id
+  role_definition_name = "Key Vault Secrets Officer"
+  principal_id         = data.azurerm_client_config.current.object_id
+}
+
 module "aks" {
   source = "../aks-private"
 
@@ -178,24 +184,40 @@ resource "azurerm_key_vault_secret" "postgres_username" {
   name         = "postgres-admin-username"
   value        = module.postgresql.administrator_username
   key_vault_id = module.key_vault.id
+
+  depends_on = [
+    azurerm_role_assignment.terraform_key_vault_secrets_officer
+  ]
 }
 
 resource "azurerm_key_vault_secret" "postgres_password" {
   name         = "postgres-admin-password"
   value        = module.postgresql.administrator_password
   key_vault_id = module.key_vault.id
+
+  depends_on = [
+    azurerm_role_assignment.terraform_key_vault_secrets_officer
+  ]
 }
 
 resource "azurerm_key_vault_secret" "postgres_url" {
   name         = "postgres-url"
   value        = "postgresql://${module.postgresql.fqdn}:5432/postgres"
   key_vault_id = module.key_vault.id
+
+  depends_on = [
+    azurerm_role_assignment.terraform_key_vault_secrets_officer
+  ]
 }
 
 resource "azurerm_key_vault_secret" "postgres_secure_string" {
   name         = "postgres-secure-string"
   value        = "Host=${module.postgresql.fqdn};Port=5432;Database=postgres;Username=${module.postgresql.administrator_username};Password=${module.postgresql.administrator_password};Ssl Mode=Require"
   key_vault_id = module.key_vault.id
+
+  depends_on = [
+    azurerm_role_assignment.terraform_key_vault_secrets_officer
+  ]
 }
 
 resource "azurerm_role_assignment" "aks_acr_pull" {

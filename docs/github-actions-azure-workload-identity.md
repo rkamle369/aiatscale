@@ -7,6 +7,7 @@ This guide configures GitHub Actions to run Terragrunt against Azure **without c
 - Workflow: `.github/workflows/terragrunt-plan.yml`
 - Workflow: `.github/workflows/terragrunt-apply.yml`
 - Terragrunt backend updated to Azure Storage in `terragrunt.hcl` with OIDC auth.
+- The apply workflow is now chained into separate jobs: `plan` -> `approval` -> `apply`.
 
 ## 1) Create Terraform state resources (Azure Portal)
 
@@ -99,17 +100,20 @@ In GitHub -> **Settings** -> **Secrets and variables** -> **Actions**:
 
 If using protected environments (`dev`, `prod`), move these to **Environment secrets/variables**.
 
-## 6) Configure environment protection (recommended)
+## 6) Configure environment protection (required for manual gate)
 
 In GitHub -> **Settings** -> **Environments**:
 
 1. Create `dev` and `prod` environments.
 2. For `prod`, configure required reviewers.
 3. (Optional) Move Azure secrets/vars to each environment.
+4. Create a `manual-approval` environment and configure required reviewers.
 
-The apply workflow already targets the selected environment via:
+The chained workflow uses an explicit manual gate job:
 
-- `environment: ${{ inputs.environment }}`
+- `approval` job -> `environment: manual-approval`
+
+`apply` will not start until that environment approval is granted.
 
 ## 7) Run workflows
 
@@ -120,7 +124,11 @@ The apply workflow already targets the selected environment via:
 
 ### Apply
 
-- Manual only: run **Terragrunt Apply (Azure OIDC)** and choose `dev` or `prod`.
+- Manual only: run **Terragrunt Plan + Approval + Apply (Azure OIDC)** and choose `dev` or `prod`.
+- Job order is:
+  1. `plan`
+  2. `approval` (manual approval required)
+  3. `apply`
 
 ## Troubleshooting
 

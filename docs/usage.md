@@ -78,6 +78,7 @@ Spot node details:
   - `postgres-admin-password`
   - `postgres-url`
   - `postgres-secure-string`
+- Terraform execution principal is granted `Key Vault Secrets Officer` on the vault so Terraform can read/create/update those secrets under RBAC.
 
 To check supported versions for your region:
 
@@ -93,6 +94,8 @@ This repository includes GitHub workflows for plan/apply using Azure Workload Id
 
 - `.github/workflows/terragrunt-plan.yml`
 - `.github/workflows/terragrunt-apply.yml`
+
+`terragrunt-apply.yml` runs `plan` and `apply` as separate jobs with a manual approval job in between. Apply is blocked until approval is granted.
 
 For Azure Portal setup and GitHub configuration steps, follow:
 
