@@ -76,8 +76,7 @@ Spot node details:
 - AKS cluster now uses `SystemAssigned` identity.
 - Key Vault workload identity integration is enabled with:
   - user-assigned identity (`aks_keyvault_uami_name`)
-  - federated credential (`aks_keyvault_federated_credential_name`)
-  - service account subject (`aks_keyvault_service_account_subject`, defaulting to `system:serviceaccount:istio-system:istio-keyvault-sa`)
+  - one federated credential per `aks_keyvault_workload_identity_bindings` entry (namespace + service account)
   - `Key Vault Secrets User` role assignment for that UAMI on Key Vault
 - Terraform execution principal is granted `Network Contributor` on AKS subnet before cluster creation to avoid subnet authorization errors during cluster create.
 - PostgreSQL connection values are stored in Key Vault secrets:
@@ -107,3 +106,4 @@ This repository includes GitHub workflows for plan/apply using Azure Workload Id
 For Azure Portal setup and GitHub configuration steps, follow:
 
 - `docs/github-actions-azure-workload-identity.md`
+- `docs/cert-management.md`

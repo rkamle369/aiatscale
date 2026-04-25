@@ -25,8 +25,19 @@ key_vault_name      = "kv-dev-apps-uaen"
 aks_name            = "aks-dev-uaen-private"
 aks_node_resource_group_name = "rg-dev-apps-uaen-aks-nodes"
 aks_keyvault_uami_name = "id-aks-dev-keyvault"
-aks_keyvault_federated_credential_name = "fic-istio-keyvault-sa"
-aks_keyvault_service_account_subject = "system:serviceaccount:istio-system:istio-keyvault-sa"
+aks_keyvault_workload_identity_bindings = [
+  { namespace = "istio-system", service_account = "istio-keyvault-sa" },
+  { namespace = "aks-istio-ingress", service_account = "keyvault-sa" },
+  { namespace = "argocd", service_account = "keyvault-sa" },
+  { namespace = "apps", service_account = "keyvault-sa" },
+  { namespace = "auth", service_account = "keyvault-sa" },
+  { namespace = "data", service_account = "keyvault-sa" },
+  { namespace = "models", service_account = "keyvault-sa" },
+  { namespace = "obs", service_account = "keyvault-sa" },
+  { namespace = "mgmt", service_account = "keyvault-sa" },
+  { namespace = "devops", service_account = "keyvault-sa" },
+  { namespace = "extra", service_account = "keyvault-sa" },
+]
 aks_dns_prefix      = "aksdevuaen"
 aks_system_node_pool_name = "system"
 aks_node_vm_size    = "Standard_D2s_v5"

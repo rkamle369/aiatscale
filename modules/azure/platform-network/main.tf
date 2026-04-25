@@ -161,13 +161,21 @@ module "aks" {
   ]
 }
 
-resource "azurerm_federated_identity_credential" "istio_sa_fic" {
-  name                = var.aks_keyvault_federated_credential_name
-  resource_group_name = azurerm_resource_group.apps.name
-  parent_id           = azurerm_user_assigned_identity.kv_uami.id
-  issuer              = module.aks.oidc_issuer_url
-  subject             = var.aks_keyvault_service_account_subject
-  audience            = ["api://AzureADTokenExchange"]
+resource "azurerm_federated_identity_credential" "kv_workload" {
+  for_each = {
+    for b in var.aks_keyvault_workload_identity_bindings :
+    "${b.namespace}/${b.service_account}" => b
+  }
+
+  # Stable short name (Azure name constraints); subject uniqueness is the map key.
+  name                  = "fic-kv-${substr(md5(each.key), 0, 24)}"
+  resource_group_name   = azurerm_resource_group.apps.name
+  parent_id             = azurerm_user_assigned_identity.kv_uami.id
+  issuer                = module.aks.oidc_issuer_url
+  subject               = "system:serviceaccount:${each.value.namespace}:${each.value.service_account}"
+  audience              = ["api://AzureADTokenExchange"]
+
+  depends_on = [module.aks]
 }
 
 module "postgresql" {

@@ -83,12 +83,13 @@ variable "aks_keyvault_uami_name" {
   type = string
 }
 
-variable "aks_keyvault_federated_credential_name" {
-  type = string
-}
-
-variable "aks_keyvault_service_account_subject" {
-  type = string
+# One federated identity credential per entry (same UAMI, different Kubernetes SA subject).
+# Append rows to add more namespaces or service accounts.
+variable "aks_keyvault_workload_identity_bindings" {
+  type = list(object({
+    namespace       = string
+    service_account = string
+  }))
 }
 
 variable "aks_dns_prefix" {
