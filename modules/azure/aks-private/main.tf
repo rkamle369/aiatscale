@@ -46,6 +46,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "spot" {
   node_count            = var.spot_node_count
   mode                  = "User"
   os_type               = "Linux"
+  vnet_subnet_id        = var.subnet_id
   priority              = "Spot"
   eviction_policy       = "Delete"
   spot_max_price        = var.spot_max_price
