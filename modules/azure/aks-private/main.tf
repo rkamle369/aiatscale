@@ -15,8 +15,7 @@ resource "azurerm_kubernetes_cluster" "this" {
   }
 
   identity {
-    type         = "UserAssigned"
-    identity_ids = [var.control_plane_user_assigned_identity_id]
+    type = "SystemAssigned"
   }
 
   key_vault_secrets_provider {

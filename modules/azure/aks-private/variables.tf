@@ -2,7 +2,6 @@ variable "name" { type = string }
 variable "location" { type = string }
 variable "resource_group_name" { type = string }
 variable "node_resource_group_name" { type = string }
-variable "control_plane_user_assigned_identity_id" { type = string }
 variable "dns_prefix" { type = string }
 variable "subnet_id" { type = string }
 variable "system_node_pool_name" { type = string }

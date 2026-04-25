@@ -79,6 +79,18 @@ variable "aks_node_resource_group_name" {
   type = string
 }
 
+variable "aks_keyvault_uami_name" {
+  type = string
+}
+
+variable "aks_keyvault_federated_credential_name" {
+  type = string
+}
+
+variable "aks_keyvault_service_account_subject" {
+  type = string
+}
+
 variable "aks_dns_prefix" {
   type = string
 }

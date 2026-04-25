@@ -62,17 +62,17 @@ resource "azurerm_subnet" "spoke_aks" {
   address_prefixes     = [var.spoke_subnet_aks]
 }
 
-resource "azurerm_user_assigned_identity" "aks_control_plane" {
-  name                = "${var.aks_name}-cp-identity"
+resource "azurerm_user_assigned_identity" "kv_uami" {
+  name                = var.aks_keyvault_uami_name
   resource_group_name = azurerm_resource_group.apps.name
   location            = var.location
   tags                = var.tags
 }
 
-resource "azurerm_role_assignment" "aks_control_plane_subnet_network_contributor" {
+resource "azurerm_role_assignment" "terraform_subnet_network_contributor" {
   scope                = azurerm_subnet.spoke_aks.id
   role_definition_name = "Network Contributor"
-  principal_id         = azurerm_user_assigned_identity.aks_control_plane.principal_id
+  principal_id         = data.azurerm_client_config.current.object_id
 }
 
 resource "azurerm_subnet" "spoke_db" {
@@ -143,7 +143,6 @@ module "aks" {
   location           = var.location
   resource_group_name = azurerm_resource_group.apps.name
   node_resource_group_name = var.aks_node_resource_group_name
-  control_plane_user_assigned_identity_id = azurerm_user_assigned_identity.aks_control_plane.id
   dns_prefix         = var.aks_dns_prefix
   subnet_id          = azurerm_subnet.spoke_aks.id
   system_node_pool_name = var.aks_system_node_pool_name
@@ -158,8 +157,17 @@ module "aks" {
   tags               = var.tags
 
   depends_on = [
-    azurerm_role_assignment.aks_control_plane_subnet_network_contributor
+    azurerm_role_assignment.terraform_subnet_network_contributor
   ]
+}
+
+resource "azurerm_federated_identity_credential" "istio_sa_fic" {
+  name                = var.aks_keyvault_federated_credential_name
+  resource_group_name = azurerm_resource_group.apps.name
+  parent_id           = azurerm_user_assigned_identity.kv_uami.id
+  issuer              = module.aks.oidc_issuer_url
+  subject             = var.aks_keyvault_service_account_subject
+  audience            = ["api://AzureADTokenExchange"]
 }
 
 module "postgresql" {
@@ -229,5 +237,5 @@ resource "azurerm_role_assignment" "aks_acr_pull" {
 resource "azurerm_role_assignment" "aks_key_vault_secrets_user" {
   scope                = module.key_vault.id
   role_definition_name = "Key Vault Secrets User"
-  principal_id         = module.aks.kubelet_object_id
+  principal_id         = azurerm_user_assigned_identity.kv_uami.principal_id
 }

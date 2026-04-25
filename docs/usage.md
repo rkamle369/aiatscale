@@ -73,6 +73,13 @@ Spot node details:
   - `aks_system_node_pool_name`
   - `aks_spot_node_pool_name`
 - AKS control-plane identity is user-assigned and pre-granted `Network Contributor` on the AKS subnet to avoid subnet authorization errors during cluster create.
+- AKS cluster now uses `SystemAssigned` identity.
+- Key Vault workload identity integration is enabled with:
+  - user-assigned identity (`aks_keyvault_uami_name`)
+  - federated credential (`aks_keyvault_federated_credential_name`)
+  - service account subject (`aks_keyvault_service_account_subject`, defaulting to `system:serviceaccount:istio-system:istio-keyvault-sa`)
+  - `Key Vault Secrets User` role assignment for that UAMI on Key Vault
+- Terraform execution principal is granted `Network Contributor` on AKS subnet before cluster creation to avoid subnet authorization errors during cluster create.
 - PostgreSQL connection values are stored in Key Vault secrets:
   - `postgres-admin-username`
   - `postgres-admin-password`
