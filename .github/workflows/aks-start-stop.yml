@@ -1,0 +1,153 @@
+name: AKS scheduled start/stop (Abu Dhabi time)
+
+# Schedules (UTC): 16:00 UTC = 20:00 Asia/Dubai (8 PM), 04:00 UTC = 08:00 Dubai (8 AM)
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "Start or stop the cluster"
+        required: true
+        type: choice
+        options:
+          - start
+          - stop
+      resource_group:
+        description: "AKS resource group (optional if repo variable AKS_RESOURCE_GROUP is set)"
+        required: false
+        type: string
+      cluster_name:
+        description: "AKS cluster name (optional if repo variable AKS_CLUSTER_NAME is set)"
+        required: false
+        type: string
+  schedule:
+    - cron: "0 16 * * *" # 8:00 PM Abu Dhabi / Dubai (GST, UTC+4)
+    - cron: "0 4 * * *" # 8:00 AM Abu Dhabi / Dubai
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  aks-power:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Resolve action and validate inputs
+        id: resolve
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          MANUAL_ACTION: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.action || '' }}
+          INPUT_RG: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.resource_group || '' }}
+          INPUT_CLUSTER: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.cluster_name || '' }}
+          VAR_RG: ${{ vars.AKS_RESOURCE_GROUP }}
+          VAR_CLUSTER: ${{ vars.AKS_CLUSTER_NAME }}
+        run: |
+          set -euo pipefail
+          echo "=== Run context ==="
+          echo "Event: $EVENT_NAME"
+          echo "Repository: ${{ github.repository }}"
+          echo "Ref: ${{ github.ref }}"
+
+          if [ -n "${INPUT_RG:-}" ]; then RG="$INPUT_RG"; else RG="${VAR_RG:-}"; fi
+          if [ -n "${INPUT_CLUSTER:-}" ]; then CLUSTER="$INPUT_CLUSTER"; else CLUSTER="${VAR_CLUSTER:-}"; fi
+
+          if [ -z "$RG" ] || [ -z "$CLUSTER" ]; then
+            echo "::error::Resource group and cluster name must be set. For scheduled runs, set repository variables AKS_RESOURCE_GROUP and AKS_CLUSTER_NAME. For manual runs, use workflow inputs and/or those variables."
+            exit 1
+          fi
+
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            ACTION="$MANUAL_ACTION"
+            echo "Manual run: action=$ACTION (chosen in Run workflow)"
+          else
+            UTC_HOUR=$(date -u +%H)
+            echo "Scheduled run: UTC hour at workflow start is $UTC_HOUR"
+            case "$UTC_HOUR" in
+              16) ACTION="stop" ;;
+              04) ACTION="start" ;;
+              *)
+                echo "::error::Unexpected schedule trigger (UTC hour $UTC_HOUR). Expected 04 (start) or 16 (stop)."
+                exit 1
+                ;;
+            esac
+            echo "Derived action from schedule: $ACTION"
+          fi
+
+          echo "resource_group=$RG" >> "$GITHUB_OUTPUT"
+          echo "cluster_name=$CLUSTER" >> "$GITHUB_OUTPUT"
+          echo "action=$ACTION" >> "$GITHUB_OUTPUT"
+
+      - name: Show cluster power state (before)
+        id: before
+        shell: bash
+        env:
+          RG: ${{ steps.resolve.outputs.resource_group }}
+          CLUSTER: ${{ steps.resolve.outputs.cluster_name }}
+        run: |
+          set -euo pipefail
+          echo "=== Cluster status (before) ==="
+          az aks show -g "$RG" -n "$CLUSTER" \
+            --query "{name:name, resourceGroup:resourceGroup, powerState:powerState, provisioningState:provisioningState}" \
+            -o json
+          STATE=$(az aks show -g "$RG" -n "$CLUSTER" --query "powerState.code" -o tsv)
+          echo "Power state (code): $STATE"
+          echo "state=$STATE" >> "$GITHUB_OUTPUT"
+
+      - name: Stop cluster (only if running)
+        if: steps.resolve.outputs.action == 'stop'
+        shell: bash
+        env:
+          RG: ${{ steps.resolve.outputs.resource_group }}
+          CLUSTER: ${{ steps.resolve.outputs.cluster_name }}
+        run: |
+          set -euo pipefail
+          STATE=$(az aks show -g "$RG" -n "$CLUSTER" --query "powerState.code" -o tsv)
+          echo "=== Stop requested; current power state: $STATE ==="
+          if [ "$STATE" = "Running" ]; then
+            echo "Stopping cluster (az cli will wait until the operation completes)..."
+            az aks stop -g "$RG" -n "$CLUSTER"
+            STATE=$(az aks show -g "$RG" -n "$CLUSTER" --query "powerState.code" -o tsv)
+            echo "Power state after stop: $STATE"
+          else
+            echo "Cluster is not Running (state: $STATE). Skipping stop."
+          fi
+
+      - name: Start cluster (only if stopped)
+        if: steps.resolve.outputs.action == 'start'
+        shell: bash
+        env:
+          RG: ${{ steps.resolve.outputs.resource_group }}
+          CLUSTER: ${{ steps.resolve.outputs.cluster_name }}
+        run: |
+          set -euo pipefail
+          STATE=$(az aks show -g "$RG" -n "$CLUSTER" --query "powerState.code" -o tsv)
+          echo "=== Start requested; current power state: $STATE ==="
+          if [ "$STATE" = "Stopped" ]; then
+            echo "Starting cluster (az cli will wait until the operation completes)..."
+            az aks start -g "$RG" -n "$CLUSTER"
+            STATE=$(az aks show -g "$RG" -n "$CLUSTER" --query "powerState.code" -o tsv)
+            echo "Power state after start: $STATE"
+          else
+            echo "Cluster is not Stopped (state: $STATE). Skipping start."
+          fi
+
+      - name: Show cluster power state (after)
+        shell: bash
+        env:
+          RG: ${{ steps.resolve.outputs.resource_group }}
+          CLUSTER: ${{ steps.resolve.outputs.cluster_name }}
+        run: |
+          set -euo pipefail
+          echo "=== Cluster status (after) ==="
+          az aks show -g "$RG" -n "$CLUSTER" \
+            --query "{name:name, resourceGroup:resourceGroup, powerState:powerState, provisioningState:provisioningState}" \
+            -o json
+          STATE=$(az aks show -g "$RG" -n "$CLUSTER" --query "powerState.code" -o tsv)
+          echo "Final power state (code): $STATE"
